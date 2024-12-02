@@ -24,7 +24,10 @@ function Landing({ navigation }: { navigation: any }) {
         <Text style={styles.title}>MediChat</Text>
         <Text style={styles.subtitle}>빠르고 정확한 의료 상담, AI로 완성하다.</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity 
+            style={styles.loginButton} 
+            onPress={() => navigation.navigate('Login')}
+          >
             <Text style={styles.buttonText1}>로그인</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.signupButton}>

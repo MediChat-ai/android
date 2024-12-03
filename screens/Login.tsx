@@ -52,7 +52,7 @@ function Login({ navigation }: { navigation: any }) {
       if (response.status === 200) {
         await SecureStore.setItemAsync('token', response.data.token);
         alert('로그인 성공!');
-        navigation.navigate('Chat');
+        navigation.navigate('ChatTabs'); 
       } else if (response.status === 401) {
         alert(response.data.error);
       }

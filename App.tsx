@@ -26,21 +26,25 @@ const Placeholder = ({ name }: { name: string }) => (
 // Chat Tabs Navigation
 const ChatTabs = () => (
   <Tab.Navigator>
-    <Tab.Screen name="AIChat" component={Chat} options={{ tabBarLabel: "AI 채팅" }} />
+    <Tab.Screen
+      name="Chat"
+      component={Chat}
+      options={{ headerShown: false }}
+    />
     <Tab.Screen
       name="HospitalInfo"
       component={HospitalInfo || (() => <Placeholder name="병원 정보" />)}
-      options={{ tabBarLabel: "병원 정보" }}
+      options={{ headerShown: false }}
     />
     <Tab.Screen
       name="Community"
       component={Community || (() => <Placeholder name="커뮤니티" />)}
-      options={{ tabBarLabel: "커뮤니티" }}
+      options={{ headerShown: false }}
     />
     <Tab.Screen
       name="Profile"
       component={Profile || (() => <Placeholder name="프로필" />)}
-      options={{ tabBarLabel: "프로필" }}
+      options={{ headerShown: false }}
     />
   </Tab.Navigator>
 );

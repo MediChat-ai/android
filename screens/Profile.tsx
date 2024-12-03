@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
+import * as SecureStore from 'expo-secure-store';
 
 function Profile({ navigation }: { navigation: any }) {
   const [fontLoading, setFontLoading] = useState(false);
@@ -18,10 +19,19 @@ function Profile({ navigation }: { navigation: any }) {
     };
     loadFonts();
   }, []);
+
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync('token');
+    navigation.navigate('Login');
+  };
+
   return (
     fontLoading && (
       <View style={styles.container}>
         <Text>profile</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.buttonText1}>로그아웃</Text>
+        </TouchableOpacity>
       </View>
     )
   );
@@ -33,50 +43,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-  title: {
-    fontSize: 40,
-    marginTop: '60%',
-    marginBottom: 10,
-    fontFamily: 'NanumSquareRoundEB',
-  },
-  subtitle: {
-    fontSize: 20,
-    textAlign: 'center',
-    fontFamily: 'NanumSquareRoundB',
-  },
-  loginButton: {
-    borderWidth: 1,
-    borderColor: '#000000',
-    borderRadius: 10,
-    padding: 10,
-    width: '80%',
-    alignItems: 'center',
-    marginBottom: 20,
-    height: 40
-  },
-  signupButton: {
+  logoutButton: { // 로그아웃 버튼 스타일 추가
     backgroundColor: '#0070FF',
     borderRadius: 10,
     padding: 10,
     width: '80%',
     alignItems: 'center',
+    marginBottom: 20,
+    height: 40,
   },
   buttonText1: {
-    color: '#000000',
-    fontSize: 16,
-    fontFamily: 'NanumSquareRoundR',
-  },
-  buttonText2: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'NanumSquareRoundR',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    alignItems: 'center',
-  },
+  }
 });
 
 export default Profile;

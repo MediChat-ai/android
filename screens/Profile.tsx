@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-  logoutButton: { // 로그아웃 버튼 스타일 추가
+  logoutButton: {
     backgroundColor: '#0070FF',
     borderRadius: 10,
     padding: 10,

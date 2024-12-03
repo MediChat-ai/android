@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler } from 'react-native';
 import * as Font from 'expo-font';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -41,6 +41,20 @@ function Login({ navigation }: { navigation: any }) {
     //   offlineAccess: true,
     // });
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Landing');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const handleLogin = async () => {
     try {
@@ -123,20 +137,20 @@ function Login({ navigation }: { navigation: any }) {
             <Text style={styles.buttonText1}>로그인</Text>
           </TouchableOpacity>
 
-          <View style={styles.socialContainer}>
+          {/* <View style={styles.socialContainer}>
             <Text style={styles.socialLoginText}>소셜 계정으로 간편하게 로그인하세요!</Text>
 
-            {/* <TouchableOpacity style={styles.signupButton1} onPress={() => naverLogin()}>
+            <TouchableOpacity style={styles.signupButton1} onPress={() => naverLogin()}>
               <Text style={styles.buttonText2}>네이버 로그인</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
 
-            {/* <GoogleSigninButton
+            <GoogleSigninButton
               style={styles.signupButton1}
               size={GoogleSigninButton.Size.Wide}
               color={GoogleSigninButton.Color.Dark}
               onPress={handleGoogleLogin}
-            /> */}
-          </View>
+            />
+          </View> */}
         </ScrollView>
       </KeyboardAvoidingView>
     )
@@ -150,7 +164,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    marginTop: '20%',
+    marginTop: '50%',
     marginBottom: '10%',
     fontFamily: 'NanumSquareRoundEB',
   },

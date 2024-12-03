@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
 
-function Landing({ navigation }: { navigation: any }) {
+function HospitalInfo({ navigation }: { navigation: any }) {
   const [fontLoading, setFontLoading] = useState(false);
 
   useEffect(() => {
@@ -21,22 +21,7 @@ function Landing({ navigation }: { navigation: any }) {
   return (
     fontLoading && (
       <View style={styles.container}>
-        <Text style={styles.title}>MediChat</Text>
-        <Text style={styles.subtitle}>빠르고 정확한 의료 상담, AI로 완성하다.</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.buttonText1}>로그인</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.signupButton}
-            onPress={() => navigation.navigate('Register')}
-          >
-            <Text style={styles.buttonText2}>회원가입</Text>
-          </TouchableOpacity>
-        </View>
+        <Text>병원정보</Text>
       </View>
     )
   );
@@ -94,4 +79,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Landing;
+export default HospitalInfo;

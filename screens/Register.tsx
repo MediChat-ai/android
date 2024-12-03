@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler } from 'react-native';
 import * as Font from 'expo-font';
 
 function Register({ navigation }: { navigation: any }) {
@@ -21,6 +21,20 @@ function Register({ navigation }: { navigation: any }) {
     };
     loadFonts();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('Landing');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   return (
     fontLoading && (

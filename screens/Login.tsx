@@ -6,7 +6,6 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 // import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 
-const backendURI = process.env.REACT_APP_BACKEND_URI;
 const CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID;
 const REDIRECT_URI = process.env.REACT_APP_NAVER_REDIRECT_URI;
 

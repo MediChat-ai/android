@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, BackHandler, Alert } from 'react-native';
 import * as Font from 'expo-font';
 
 function Landing({ navigation }: { navigation: any }) {
@@ -18,6 +18,28 @@ function Landing({ navigation }: { navigation: any }) {
     };
     loadFonts();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("MediChat 종료", "앱을 종료하시겠습니까?", [
+        {
+          text: "취소",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "확인", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     fontLoading && (
       <View style={styles.container}>

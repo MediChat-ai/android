@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler, Alert } from 'react-native';
 import * as Font from 'expo-font';
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
 
 function Register({ navigation }: { navigation: any }) {
   const [fontLoading, setFontLoading] = useState(false);
   const [id, setId] = useState('');
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
 
@@ -36,6 +39,37 @@ function Register({ navigation }: { navigation: any }) {
     return () => backHandler.remove();
   }, [navigation]);
 
+  const handleRegister = async () => {
+    if (password !== rePassword) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    try {
+      const response = await axios.post(`https://api.medichat.site/users/register`, {
+        user_id: id,
+        user_name: userName,
+        pw: password,
+        auth_provider: 'local'
+      }, { validateStatus: (status) => status !== 500 });
+
+      if (response.status === 200) {
+        await SecureStore.setItemAsync('token', response.data.token);
+        alert('로그인 성공!');
+        navigation.navigate('ChatTabs');
+      } else {
+        alert(response.data.error);
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(err.message);
+        console.error('로그인 에러:', err);
+      } else {
+        alert('알 수 없는 에러가 발생했습니다.');
+        console.error('로그인 에러:', err);
+      }
+    }
+  };
+
   return (
     fontLoading && (
       <KeyboardAvoidingView
@@ -57,6 +91,13 @@ function Register({ navigation }: { navigation: any }) {
 
           <TextInput
             style={styles.input}
+            placeholder="닉네임"
+            value={userName}
+            onChangeText={setUserName}
+          />
+
+          <TextInput
+            style={styles.input}
             placeholder="비밀번호"
             secureTextEntry
             value={password}
@@ -72,10 +113,10 @@ function Register({ navigation }: { navigation: any }) {
           />
 
           <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => navigation.navigate('Home')}
+            style={styles.registerButton}
+            onPress={handleRegister}
           >
-            <Text style={styles.buttonText1}>회원가입</Text>
+            <Text style={styles.buttonText}>회원가입</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -103,7 +144,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginBottom: 20,
   },
-  loginButton: {
+  registerButton: {
     backgroundColor: '#0070FF',
     borderRadius: 10,
     padding: 10,
@@ -112,34 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     height: 40,
   },
-  signupButton1: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    width: '80%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  signupButton2: {
-    backgroundColor: '#20C801',
-    borderRadius: 10,
-    padding: 10,
-    width: '80%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText1: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'NanumSquareRoundR',
-  },
-  buttonText2: {
-    color: '#000000',
-    fontSize: 16,
-    fontFamily: 'NanumSquareRoundR',
-  },
-  buttonText3: {
+  buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'NanumSquareRoundR',
@@ -148,23 +162,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     paddingHorizontal: 10,
-  },
-  socialContainer: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    alignItems: 'center',
-  },
-  socialLoginText: {
-    fontSize: 16,
-    marginBottom: 20,
-    fontFamily: 'NanumSquareRoundR',
-  },
-  logo: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
+  }
 });
 
 export default Register;

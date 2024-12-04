@@ -22,7 +22,7 @@ function Profile({ navigation }: { navigation: any }) {
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('token');
-    navigation.navigate('Login');
+    navigation.navigate('Landing');
   };
 
   return (

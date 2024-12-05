@@ -108,7 +108,7 @@ const ChatScreen = () => {
           setOpen={setDropdownOpen}
           setValue={setSelectedModel}
           onChangeValue={(value) => setModelName(value === '정확하지만 느림' ? 0 : 1)}
-          textStyle={{ fontFamily: 'NanumSquareRoundR' }}
+          textStyle={{ fontFamily: 'NanumSquareRoundR', fontSize: 16, }}
         />
       </View>
 
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    paddingTop: 20,
+    paddingTop: 30,
   },
   dropdownContainer: {
     paddingHorizontal: 16,
@@ -202,13 +202,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: '#CCCCCC',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 10,
     marginRight: 10,
+    fontSize: 16,
   },
   sendButton: {
     backgroundColor: '#0070FF',
-    borderRadius: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 15,

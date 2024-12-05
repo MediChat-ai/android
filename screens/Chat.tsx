@@ -2,11 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
+import * as Font from 'expo-font';
 import { RUNPOD_API_KEY, RUNPOD_ENDPOINT_ID, MODEL_NAME, GROQ_API_KEY } from '@env';
 
 const BASE_URL = `https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/openai/v1`;
 
 const ChatScreen = () => {
+  const [fontLoading, setFontLoading] = useState(false)
+
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        'NanumSquareRoundB': require('../assets/fonts/NanumSquareRoundB.ttf'),
+        'NanumSquareRoundEB': require('../assets/fonts/NanumSquareRoundEB.ttf'),
+        'NanumSquareRoundL': require('../assets/fonts/NanumSquareRoundL.ttf'),
+        'NanumSquareRoundR': require('../assets/fonts/NanumSquareRoundR.ttf'),
+      });
+      setFontLoading(true);
+    };
+    loadFonts();
+  }, []);
   const [messages, setMessages] = useState([
     { sender: 'ai', text: '안녕하세요! 저는 MediChat AI입니다. 무엇을 도와드릴까요?' },
   ]);
@@ -93,6 +108,7 @@ const ChatScreen = () => {
           setOpen={setDropdownOpen}
           setValue={setSelectedModel}
           onChangeValue={(value) => setModelName(value === '정확하지만 느림' ? 0 : 1)}
+          textStyle={{ fontFamily: 'NanumSquareRoundR' }}
         />
       </View>
 
@@ -144,6 +160,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 10,
     marginBottom: 10,
+    fontFamily: 'NanumSquareRoundR',
   },
   chatBox: {
     flexGrow: 1,
@@ -166,6 +183,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
+    fontFamily: 'NanumSquareRoundR',
   },
   loadingContainer: {
     alignItems: 'center',

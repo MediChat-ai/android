@@ -41,7 +41,7 @@ function Register({ navigation }: { navigation: any }) {
 
   const handleRegister = async () => {
     if (password !== rePassword) {
-      alert('비밀번호가 일치하지 않습니다.');
+      Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
       return;
     }
     try {
@@ -54,17 +54,18 @@ function Register({ navigation }: { navigation: any }) {
 
       if (response.status === 200) {
         await SecureStore.setItemAsync('token', response.data.token);
-        alert('로그인 성공!');
-        navigation.navigate('ChatTabs');
+        Alert.alert('알림', '로그인 성공!', [
+          { text: '확인', onPress: () => navigation.navigate('ChatTabs') }
+        ]);
       } else {
-        alert(response.data.error);
+        Alert.alert('오류', response.data.error);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        alert(err.message);
+        Alert.alert('오류', err.message);
         console.error('로그인 에러:', err);
       } else {
-        alert('알 수 없는 에러가 발생했습니다.');
+        Alert.alert('오류', '알 수 없는 에러가 발생했습니다.');
         console.error('로그인 에러:', err);
       }
     }
@@ -143,6 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '80%',
     marginBottom: 20,
+    fontFamily: 'NanumSquareRoundR',
   },
   registerButton: {
     backgroundColor: '#0070FF',

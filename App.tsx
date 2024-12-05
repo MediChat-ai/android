@@ -12,41 +12,72 @@ import Community from "./screens/Community";
 import Profile from "./screens/Profile";
 import * as SecureStore from "expo-secure-store";
 import { Text, View, StyleSheet } from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Placeholder for screens not implemented
 const Placeholder = ({ name }: { name: string }) => (
   <View style={styles.placeholder}>
     <Text>{name} 화면</Text>
   </View>
 );
 
-// Chat Tabs Navigation
 const ChatTabs = () => (
-  <Tab.Navigator>
-    <Tab.Screen
-      name="Chat"
-      component={Chat}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="HospitalInfo"
-      component={HospitalInfo || (() => <Placeholder name="병원 정보" />)}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="Community"
-      component={Community || (() => <Placeholder name="커뮤니티" />)}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={Profile || (() => <Placeholder name="프로필" />)}
-      options={{ headerShown: false }}
-    />
-  </Tab.Navigator>
+<Tab.Navigator>
+  <Tab.Screen
+    name="Chat"
+    component={Chat}
+    options={{
+      headerShown: false,
+      tabBarIcon: () => <Icon name="comments" size={20} color="#000" />,
+      tabBarLabel: ({ focused }) => (
+        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
+          채팅
+        </Text>
+      )
+    }}
+  />
+  <Tab.Screen
+    name="HospitalInfo"
+    component={HospitalInfo || (() => <Placeholder name="병원 정보" />)}
+    options={{
+      headerShown: false,
+      tabBarIcon: () => <Icon name="hospital-o" size={20} color="#000" />,
+      tabBarLabel: ({ focused }) => (
+        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
+          병원 정보
+        </Text>
+      )
+    }}
+  />
+  <Tab.Screen
+    name="Community"
+    component={Community || (() => <Placeholder name="커뮤니티" />)}
+    options={{
+      headerShown: false,
+      tabBarIcon: () => <Icon name="users" size={20} color="#000" />,
+      tabBarLabel: ({ focused }) => (
+        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
+          커뮤니티
+        </Text>
+      )
+    }}
+  />
+  <Tab.Screen
+    name="Profile"
+    component={Profile || (() => <Placeholder name="프로필" />)}
+    options={{
+      headerShown: false,
+      tabBarIcon: () => <Icon name="user" size={20} color="#000" />,
+      tabBarLabel: ({ focused }) => (
+        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
+          프로필
+        </Text>
+      )
+    }}
+  />
+</Tab.Navigator>
 );
 
 export default function App() {

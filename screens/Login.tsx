@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image, BackHandler, Alert } from 'react-native';
 import * as Font from 'expo-font';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -64,17 +64,18 @@ function Login({ navigation }: { navigation: any }) {
 
       if (response.status === 200) {
         await SecureStore.setItemAsync('token', response.data.token);
-        alert('로그인 성공!');
-        navigation.navigate('ChatTabs'); 
-      } else if (response.status === 401) {
-        alert(response.data.error);
+        Alert.alert('알림', '로그인 성공!', [
+          { text: '확인', onPress: () => navigation.navigate('ChatTabs') }
+        ]);
+      } else {
+        Alert.alert('오류', response.data.error);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        alert(err.message);
+        Alert.alert('오류', err.message);
         console.error('로그인 에러:', err);
       } else {
-        alert('알 수 없는 에러가 발생했습니다.');
+        Alert.alert('오류', '알 수 없는 에러가 발생했습니다.');
         console.error('로그인 에러:', err);
       }
     }
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '80%',
     marginBottom: 20,
+    fontFamily: 'NanumSquareRoundR',
   },
   loginButton: {
     backgroundColor: '#0070FF',

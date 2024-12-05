@@ -8,7 +8,7 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Chat from "./screens/Chat";
 import HospitalInfo from "./screens/HospitalInfo";
-import Community from "./screens/Community";
+import Community from "./screens/BoardList";
 import Profile from "./screens/Profile";
 import * as SecureStore from "expo-secure-store";
 import { Text, View, StyleSheet } from "react-native";

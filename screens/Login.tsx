@@ -6,10 +6,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 // import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 
-const CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID;
-const REDIRECT_URI = process.env.REACT_APP_NAVER_REDIRECT_URI;
-
-function Login({ navigation }: { navigation: any }) {
+const Login = ({ navigation }: { navigation: any }) => {
   const [fontLoading, setFontLoading] = useState(false);
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');

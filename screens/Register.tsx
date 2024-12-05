@@ -5,7 +5,7 @@ import * as Font from 'expo-font';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-function Register({ navigation }: { navigation: any }) {
+const Register = ({ navigation }: { navigation: any }) => {
   const [fontLoading, setFontLoading] = useState(false);
   const [id, setId] = useState('');
   const [userName, setUserName] = useState('');

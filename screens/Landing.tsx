@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import { StyleSheet, Text, View, TouchableOpacity, BackHandler, Alert } from 'react-native';
 import * as Font from 'expo-font';
 
-function Landing({ navigation }: { navigation: any }) {
+const Landing = ({ navigation }: { navigation: any }) => {
   const [fontLoading, setFontLoading] = useState(false);
 
   useEffect(() => {

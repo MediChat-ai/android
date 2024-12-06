@@ -8,76 +8,95 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Chat from "./screens/Chat";
 import HospitalInfo from "./screens/HospitalInfo";
-import Community from "./screens/BoardList";
+import BoardList from "./screens/BoardList";
+import PostList from "./screens/PostList";
 import Profile from "./screens/Profile";
 import * as SecureStore from "expo-secure-store";
 import { Text, View, StyleSheet } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Placeholder 컴포넌트 (화면 준비 중일 때 사용)
 const Placeholder = ({ name }: { name: string }) => (
   <View style={styles.placeholder}>
     <Text>{name} 화면</Text>
   </View>
 );
 
+// 탭 네비게이터 (채팅, 병원 정보, 커뮤니티, 프로필)
 const ChatTabs = () => (
-<Tab.Navigator>
-  <Tab.Screen
-    name="Chat"
-    component={Chat}
-    options={{
-      headerShown: false,
-      tabBarIcon: () => <Icon name="comments" size={20} color="#000" />,
-      tabBarLabel: ({ focused }) => (
-        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
-          채팅
-        </Text>
-      )
-    }}
-  />
-  <Tab.Screen
-    name="HospitalInfo"
-    component={HospitalInfo || (() => <Placeholder name="병원 정보" />)}
-    options={{
-      headerShown: false,
-      tabBarIcon: () => <Icon name="hospital-o" size={20} color="#000" />,
-      tabBarLabel: ({ focused }) => (
-        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
-          병원 정보
-        </Text>
-      )
-    }}
-  />
-  <Tab.Screen
-    name="Community"
-    component={Community || (() => <Placeholder name="커뮤니티" />)}
-    options={{
-      headerShown: false,
-      tabBarIcon: () => <Icon name="users" size={20} color="#000" />,
-      tabBarLabel: ({ focused }) => (
-        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
-          커뮤니티
-        </Text>
-      )
-    }}
-  />
-  <Tab.Screen
-    name="Profile"
-    component={Profile || (() => <Placeholder name="프로필" />)}
-    options={{
-      headerShown: false,
-      tabBarIcon: () => <Icon name="user" size={20} color="#000" />,
-      tabBarLabel: ({ focused }) => (
-        <Text style={{ fontFamily: 'NanumSquareRoundR', color: focused ? '#0070FF' : '#000' }}>
-          프로필
-        </Text>
-      )
-    }}
-  />
-</Tab.Navigator>
+  <Tab.Navigator>
+    <Tab.Screen
+      name="Chat"
+      component={Chat}
+      options={{
+        headerShown: false,
+        tabBarIcon: () => <Icon name="comments" size={20} color="#000" />,
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ fontFamily: "NanumSquareRoundR", color: focused ? "#0070FF" : "#000" }}>
+            채팅
+          </Text>
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="HospitalInfo"
+      component={HospitalInfo || (() => <Placeholder name="병원 정보" />)}
+      options={{
+        headerShown: false,
+        tabBarIcon: () => <Icon name="hospital-o" size={20} color="#000" />,
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ fontFamily: "NanumSquareRoundR", color: focused ? "#0070FF" : "#000" }}>
+            병원 정보
+          </Text>
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Community"
+      component={CommunityStack} // CommunityStack으로 연결
+      options={{
+        headerShown: false,
+        tabBarIcon: () => <Icon name="users" size={20} color="#000" />,
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ fontFamily: "NanumSquareRoundR", color: focused ? "#0070FF" : "#000" }}>
+            커뮤니티
+          </Text>
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={Profile || (() => <Placeholder name="프로필" />)}
+      options={{
+        headerShown: false,
+        tabBarIcon: () => <Icon name="user" size={20} color="#000" />,
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ fontFamily: "NanumSquareRoundR", color: focused ? "#0070FF" : "#000" }}>
+            프로필
+          </Text>
+        ),
+      }}
+    />
+  </Tab.Navigator>
+);
+
+// 커뮤니티 스택 네비게이터
+const CommunityStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="BoardList"
+      component={BoardList}
+      options={{ title: "게시판 목록", headerShown: false }}
+    />
+    <Stack.Screen
+      name="PostList"
+      component={PostList}
+      options={{ title: "게시물 목록", headerShown: false }}
+    />
+  </Stack.Navigator>
 );
 
 export default function App() {
@@ -93,7 +112,7 @@ export default function App() {
   }, []);
 
   if (initialRoute === null) {
-    return null; // 로딩 중
+    return null; // 로딩 중 표시
   }
 
   return (

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
-function ProfileSettings() {
+function ProfileSettings({navigation }: { navigation: any }) {
   const [email, setEmail] = useState(''); // 고정된 이메일
   const [nickname, setNickname] = useState(''); // 기본 닉네임
   const [newNickname, setNewNickname] = useState(nickname);
@@ -13,6 +14,32 @@ function ProfileSettings() {
     }
     setNickname(newNickname);
     Alert.alert('Success', '닉네임이 변경되었습니다.');
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      '로그아웃',
+      '정말 로그아웃 하시겠습니까?',
+      [
+        {
+          text: '취소',
+          style: 'cancel'
+        },
+        {
+          text: '로그아웃',
+          onPress: () => {
+            SecureStore.deleteItemAsync('token').then(() => {
+              navigation.navigate('Landing');
+            }).catch((error) => {
+              console.error('토큰 삭제 오류:', error);
+              Alert.alert('오류', '로그아웃에 실패했습니다.');
+            });
+            Alert.alert('로그아웃 되었습니다.');
+          },
+          style: 'destructive'
+        }
+      ]
+    );
   };
 
   return (
@@ -46,6 +73,10 @@ function ProfileSettings() {
           </View>
         </View>
       </View>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>로그아웃</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -124,6 +155,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#AAA',
     marginTop: 10,
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

@@ -51,7 +51,7 @@ const BoardList = ({ navigation }) => {
   const renderBoard = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate('CommunityDetail', { id: item._id })}
+      onPress={() => navigation.navigate('PostList', { id: item._id })}
     >
       <Image source={{ uri: item.cover_url }} style={styles.image} />
       <View style={styles.cardContent}>

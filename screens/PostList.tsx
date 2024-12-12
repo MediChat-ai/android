@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import * as Font from 'expo-font';
 
 const backendURI = "https://api.medichat.site";
 
@@ -10,6 +11,20 @@ const PostList = ({ route, navigation }: { route: any; navigation: any }) => {
   const [posts, setPosts] = useState([]);
   const [boardName, setBoardName] = useState("게시판 이름");
   const [loading, setLoading] = useState(true);
+  const [fontLoading, setFontLoading] = useState(false);
+
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        'NanumSquareRoundB': require('../assets/fonts/NanumSquareRoundB.ttf'),
+        'NanumSquareRoundEB': require('../assets/fonts/NanumSquareRoundEB.ttf'),
+        'NanumSquareRoundL': require('../assets/fonts/NanumSquareRoundL.ttf'),
+        'NanumSquareRoundR': require('../assets/fonts/NanumSquareRoundR.ttf'),
+      });
+      setFontLoading(true);
+    };
+    loadFonts();
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -53,7 +68,7 @@ const PostList = ({ route, navigation }: { route: any; navigation: any }) => {
   const renderPost = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("PostDetail", { id: item._id })}
+      onPress={() => navigation.navigate("PostDetail", { post_id: item._id, board_id: id })}
     >
       <Text style={styles.cardTitle}>{item.post_title || "제목 없음"}</Text>
       <Text style={styles.cardDescription}>

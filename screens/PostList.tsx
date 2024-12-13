@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, BackHandler } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import * as Font from 'expo-font';
@@ -64,6 +64,20 @@ const PostList = ({ route, navigation }: { route: any; navigation: any }) => {
 
     fetchPosts();
   }, [id]);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("BoardList");
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const renderPost = ({ item }: { item: any }) => (
     <TouchableOpacity

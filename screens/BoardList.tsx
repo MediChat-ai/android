@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import * as Font from 'expo-font';
@@ -46,6 +46,25 @@ const BoardList = ({ navigation }) => {
       }
     };
     fetchBoardList();
+  }, []);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        Alert.alert("MediChat 종료", "앱을 종료하시겠습니까?", [
+          {
+            text: "취소",
+            onPress: () => null,
+            style: "cancel"
+          },
+          { text: "확인", onPress: () => BackHandler.exitApp() }
+        ]);
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   const renderBoard = ({ item }) => (
@@ -99,7 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: '#DDDDDD',
   },
   image: {
     width: '100%',

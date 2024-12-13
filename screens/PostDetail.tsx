@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TextInput, Button, Alert, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TextInput, Button, Alert, TouchableOpacity, BackHandler } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import * as Font from 'expo-font';
@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 const backendURI = "https://api.medichat.site";
 
-const PostDetail = ({ route }: { route: any }) => {
+const PostDetail = ({ route, navigation }: { route: any; navigation: any }) => {
   const [post, setPost] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -171,6 +171,20 @@ const PostDetail = ({ route }: { route: any }) => {
   useEffect(() => {
     fetchPostAndComments();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate("PostList", { id: board_id });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation, board_id]);
 
   if (!post) {
     return (

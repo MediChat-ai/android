@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, BackHandler } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import * as Font from "expo-font";
@@ -22,6 +22,20 @@ const WritePost = ({ route, navigation }: { route: any; navigation: any }) => {
     };
     loadFonts();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('PostList', { id: board_id });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation, board_id]);
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) {

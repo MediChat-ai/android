@@ -15,6 +15,10 @@ const PostDetail = ({ route }: { route: any }) => {
   const [fontLoading, setFontLoading] = useState(false);
   const [editingComment, setEditingComment] = useState({ id: "", content: "" });
   const [inputHeight, setInputHeight] = useState(40);
+  const [editingPost, setEditingPost] = useState(false);
+  const [editedPostContent, setEditedPostContent] = useState("");
+  const [editedPostTitle, setEditedPostTitle] = useState("");
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const { board_id, post_id } = route.params;
 
@@ -51,11 +55,56 @@ const PostDetail = ({ route }: { route: any }) => {
 
       const decodedToken: any = JSON.parse(atob(token.split(".")[1]));
       setIsAuthor(decodedToken.user_name === fetchedPost.author_name);
+      setCurrentUser(decodedToken.user_name);
     } catch (err) {
       console.error("불러오기 실패:", err);
       Alert.alert("오류", "데이터를 불러오는 중 문제가 발생했습니다.");
     }
   };
+  const editPost = async () => {
+    if (!editedPostTitle.trim() || !editedPostContent.trim()) {
+      Alert.alert("오류", "제목과 내용을 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) throw new Error("로그인이 필요합니다.");
+
+      await axios.put(
+        `${backendURI}/community/editPost`,
+        { 
+          post_id, 
+          title: editedPostTitle,
+          content: editedPostContent, 
+          token 
+        },
+      );
+
+      setEditingPost(false);
+      fetchPostAndComments();
+    } catch (err) {
+      console.error("게시물 수정 실패:", err);
+      Alert.alert("오류", "게시물 수정 중 문제가 발생했습니다.");
+    }
+  };
+
+  const deletePost = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) throw new Error("로그인이 필요합니다.");
+
+      await axios.delete(`${backendURI}/community/deletePost`, {
+        data: { post_id, token },
+      });
+
+      Alert.alert("완료", "게���물이 삭제되었습니다.", [{ text: "확인", onPress: () => console.log("Navigate to list") }]);
+    } catch (err) {
+      console.error("게시물 삭제 실패:", err);
+      Alert.alert("오류", "게시물 삭제 중 문제가 발생했습니다.");
+    }
+  };
+
 
   const addComment = async () => {
     if (!newComment.trim()) {
@@ -134,14 +183,76 @@ const PostDetail = ({ route }: { route: any }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.postContainer}>
-        <Text style={styles.title}>{post.post_title}</Text>
-        <Text style={styles.author}>
-          작성자: {post.author_name} | 작성 시간:{" "}
-          {new Date(post.created_at).toLocaleString("ko-KR", {
-            timeZone: "Asia/Seoul",
-          })}
-        </Text>
-        <Text style={styles.content}>{post.post_content}</Text>
+        {editingPost ? (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="제목을 입력하세요"
+              value={editedPostTitle}
+              onChangeText={setEditedPostTitle}
+            />
+            <TextInput
+              style={[styles.input, { height: Math.max(40, inputHeight) }]}
+              placeholder="게시물 내용을 입력하세요"
+              value={editedPostContent}
+              onChangeText={setEditedPostContent}
+              multiline={true}
+              onContentSizeChange={(e) =>
+                setInputHeight(e.nativeEvent.contentSize.height)
+              }
+            />
+            <TouchableOpacity onPress={editPost} style={styles.button}>
+              <Text style={styles.buttonText}>저장</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setEditingPost(false)}
+              style={[styles.button, { backgroundColor: "gray" }]}
+            >
+              <Text style={styles.buttonText}>취소</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.title}>{post.post_title}</Text>
+            <Text style={styles.author}>
+              작성자: {post.author_name} | 작성 시간: {new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}
+            </Text>
+            <View style={styles.iconContainer}>
+              {isAuthor && (
+                <>
+                  <Icon
+                    name="create-outline"
+                    size={24}
+                    color="#007bff"
+                    onPress={() => {
+                      setEditedPostTitle(post.post_title);
+                      setEditedPostContent(post.post_content);
+                      setEditingPost(true);
+                    }}
+                    style={styles.icon}
+                  />
+                  <Icon
+                    name="trash-outline"
+                    size={24}
+                    color="red"
+                    onPress={() => {
+                      Alert.alert(
+                        "게시물 삭제",
+                        "게시물을 삭제하시겠습니까?",
+                        [
+                          { text: "취소", style: "cancel" },
+                          { text: "삭제", onPress: deletePost, style: "destructive" },
+                        ]
+                      );
+                    }}
+                    style={styles.icon}
+                  />
+                </>
+              )}
+            </View>
+            <Text style={styles.content}>{post.post_content}</Text>
+          </>
+        )}
       </View>
 
       <Text style={styles.commentsTitle}>댓글</Text>
@@ -197,37 +308,39 @@ const PostDetail = ({ route }: { route: any }) => {
                       timeZone: "Asia/Seoul",
                     })}
                   </Text>
-                  <View style={styles.iconContainer}>
-                    <Icon
-                      name="create-outline"
-                      size={20}
-                      color="#007bff"
-                      onPress={() =>
-                        setEditingComment({ id: comment._id, content: comment.content })
-                      }
-                      style={styles.icon}
-                    />
-                    <Icon
-                      name="trash-outline"
-                      size={20}
-                      color="red"
-                      onPress={() => {
-                        Alert.alert(
-                          "댓글 삭제",
-                          "댓글을 삭제하시겠습니까?",
-                          [
-                            { text: "취소", style: "cancel" },
-                            {
-                              text: "삭제",
-                              onPress: () => deleteComment(comment._id),
-                              style: "destructive",
-                            },
-                          ]
-                        );
-                      }}
-                      style={styles.icon}
-                    />
-                  </View>
+                  {comment.author_name === currentUser && (
+                    <View style={styles.iconContainer}>
+                      <Icon
+                        name="create-outline"
+                        size={20}
+                        color="#007bff"
+                        onPress={() =>
+                          setEditingComment({ id: comment._id, content: comment.content })
+                        }
+                        style={styles.icon}
+                      />
+                      <Icon
+                        name="trash-outline"
+                        size={20}
+                        color="red"
+                        onPress={() => {
+                          Alert.alert(
+                            "댓글 삭제",
+                            "댓글을 삭제하시겠습니까?",
+                            [
+                              { text: "취소", style: "cancel" },
+                              {
+                                text: "삭제",
+                                onPress: () => deleteComment(comment._id),
+                                style: "destructive",
+                              },
+                            ]
+                          );
+                        }}
+                        style={styles.icon}
+                      />
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.commentContent}>{comment.content}</Text>
               </>

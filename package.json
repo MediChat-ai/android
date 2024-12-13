@@ -23,6 +23,7 @@
     "expo-font": "~13.0.1",
     "expo-secure-store": "^14.0.0",
     "expo-status-bar": "~2.0.0",
+    "jwt-decode": "^4.0.0",
     "markdown-it": "^14.1.0",
     "metro-react-native-babel-preset": "^0.77.0",
     "react": "18.3.1",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@types/jwt-decode": "^3.1.0",
     "@types/react": "~18.3.12",
     "typescript": "^5.3.3"
   },

@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    marginBottom: 20,
+    marginBottom: 30,
     textAlign: 'center',
     fontFamily: 'NanumSquareRoundB',
   },

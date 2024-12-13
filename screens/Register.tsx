@@ -147,13 +147,12 @@ const styles = StyleSheet.create({
     fontFamily: 'NanumSquareRoundR',
   },
   registerButton: {
-    backgroundColor: '#0070FF',
+    backgroundColor: "#0070FF",
     borderRadius: 10,
     padding: 10,
-    width: '80%',
-    alignItems: 'center',
     marginBottom: 20,
-    height: 40,
+    alignItems: "center",
+    width: '100%',
   },
   buttonText: {
     color: '#FFFFFF',

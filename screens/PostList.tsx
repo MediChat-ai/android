@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     fontFamily: "NanumSquareRoundR",
   },
   addButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#0070FF",
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,

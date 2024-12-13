@@ -1,173 +1,197 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { jwtDecode } from "jwt-decode";
+import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 
-function ProfileSettings({navigation }: { navigation: any }) {
-  const [email, setEmail] = useState(''); // 고정된 이메일
-  const [nickname, setNickname] = useState(''); // 기본 닉네임
-  const [newNickname, setNewNickname] = useState(nickname);
+const backendURI = "https://api.medichat.site";
 
-  const handleNicknameChange = () => {
-    if (!newNickname.trim()) {
-      Alert.alert('Error', '닉네임을 입력해주세요.');
+const Profile = ({ navigation }) => {
+  const [userId, setUserId] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const loadProfileFromToken = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        Alert.alert("오류", "로그인이 필요합니다.");
+        return;
+      }
+      const decodedToken = jwtDecode<{ user_id: string; user_name: string }>(token);
+      setUserId(decodedToken.user_id);
+      setNickname(decodedToken.user_name);
+    } catch (err) {
+      console.error("토큰 디코딩 실패:", err);
+      Alert.alert("오류", "프로필 정보를 로드하는 중 문제가 발생했습니다.");
+    }
+  };
+
+  const handleNicknameChange = async () => {
+    if (!nickname.trim()) {
+      Alert.alert("오류", "닉네임을 입력해주세요.");
       return;
     }
-    setNickname(newNickname);
-    Alert.alert('Success', '닉네임이 변경되었습니다.');
+
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        Alert.alert("오류", "로그인이 필요합니다.");
+        return;
+      }
+
+      const response = await axios.post(`${backendURI}/users/change/username`, {
+        new_username: nickname,
+        token,
+      });
+      await SecureStore.setItemAsync("token", response.data.token);
+
+      Alert.alert("성공", "닉네임이 성공적으로 변경되었습니다.");
+      setIsEditing(false);
+    } catch (err) {
+      console.error("닉네임 변경 실패:", err);
+      Alert.alert("오류", "닉네임 변경 중 문제가 발생했습니다.");
+    }
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      '로그아웃',
-      '정말 로그아웃 하시겠습니까?',
-      [
-        {
-          text: '취소',
-          style: 'cancel'
-        },
-        {
-          text: '로그아웃',
-          onPress: () => {
-            SecureStore.deleteItemAsync('token').then(() => {
-              navigation.navigate('Landing');
-            }).catch((error) => {
-              console.error('토큰 삭제 오류:', error);
-              Alert.alert('오류', '로그아웃에 실패했습니다.');
-            });
-            Alert.alert('로그아웃 되었습니다.');
-          },
-          style: 'destructive'
-        }
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      await SecureStore.deleteItemAsync("token");
+      Alert.alert("성공", "로그아웃되었습니다.");
+      navigation.navigate("Landing");
+    } catch (err) {
+      console.error("로그아웃 실패:", err);
+      Alert.alert("오류", "로그아웃 중 문제가 발생했습니다.");
+    }
   };
+
+  useEffect(() => {
+    loadProfileFromToken();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>내 프로필</Text>
+      <Text style={styles.title}>프로필</Text>
+      <Text style={styles.label}>사용자 ID</Text>
+      <TextInput
+        style={[styles.input, styles.disabledInput]}
+        value={userId}
+        editable={false}
+      />
 
-      <View style={styles.settingsContainer}>
-        <Text style={styles.sectionTitle}>사용자 설정</Text>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>ID</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            editable={false} // 이메일은 수정 불가
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>닉네임</Text>
-          <View style={styles.nicknameRow}>
-            <TextInput
-              style={[styles.input, styles.nicknameInput]}
-              value={newNickname}
-              onChangeText={setNewNickname}
-              placeholder="닉네임 입력"
-            />
-            <TouchableOpacity style={styles.changeButton} onPress={handleNicknameChange}>
-              <Text style={styles.changeButtonText}>닉네임 변경</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+      <Text style={styles.label}>닉네임</Text>
+      <View style={styles.nicknameContainer}>
+        <TextInput
+          style={[
+            styles.input,
+            { width: "100%" }, // 너비 고정
+            isEditing ? null : styles.disabledInput,
+          ]}
+          value={nickname}
+          onChangeText={setNickname}
+          editable={isEditing}
+        />
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      {isEditing && (
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleNicknameChange}
+        >
+          <Text style={styles.saveButtonText}>완료</Text>
+        </TouchableOpacity>
+      )}
+
+      {!isEditing && (
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => setIsEditing(true)}
+        >
+          <Text style={styles.editButtonText}>수정</Text>
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={handleLogout}
+      >
         <Text style={styles.logoutButtonText}>로그아웃</Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-  },
-  settingsContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#0070FF',
-  },
-  field: {
-    marginBottom: 15,
+    padding: 15,
+    paddingTop: 30,
+    backgroundColor: "#ffffff",
   },
   label: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 5,
+    fontSize: 18,
+    marginBottom: 8,
+    fontFamily: "NanumSquareRoundB",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 5,
+    borderColor: "#ddd",
+    borderRadius: 8,
     padding: 10,
-    backgroundColor: '#F0F0F0',
+    fontSize: 16,
+    marginBottom: 20,
+    fontFamily: "NanumSquareRoundR",
   },
-  nicknameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  disabledInput: {
+    backgroundColor: "#f5f5f5",
+    color: "#aaa",
   },
-  nicknameInput: {
-    flex: 1,
-    marginRight: 10,
+  nicknameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  changeButton: {
-    backgroundColor: '#0070FF',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
+  editButton: {
+    backgroundColor: "#0070FF",
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
   },
-  changeButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+  editButtonText: {
+    color: "#ffffff",
+    fontFamily: "NanumSquareRoundR",
   },
-  footer: {
-    marginTop: 20,
-    alignItems: 'center',
+  saveButton: {
+    backgroundColor: "#28a745",
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
   },
-  footerLink: {
-    fontSize: 14,
-    color: '#0070FF',
-    marginBottom: 5,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#AAA',
-    marginTop: 10,
+  saveButtonText: {
+    color: "#ffffff",
+    fontFamily: "NanumSquareRoundR",
   },
   logoutButton: {
-    backgroundColor: '#FF3B30',
-    padding: 15,
-    borderRadius: 8,
-    marginTop: 20,
-    alignItems: 'center',
+    backgroundColor: "#dc3545",
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
   },
   logoutButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontFamily: "NanumSquareRoundR",
+  },
+  title: {
+    fontSize: 28,
+    fontFamily: "NanumSquareRoundB",
+    marginBottom: 30,
+    textAlign: 'center',
   },
 });
 
-export default ProfileSettings;
+export default Profile;

@@ -166,7 +166,7 @@ const Profile = ({ navigation }) => {
       />
 
       <TouchableOpacity
-        style={styles.saveButton}
+        style={isEditingPassword ? styles.saveButton : styles.editButton}
         onPress={() =>
           isEditingPassword
             ? handlePasswordChange()

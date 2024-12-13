@@ -238,6 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     fontFamily: "NanumSquareRoundR",
+    width: '100%',
   },
   disabledInput: {
     backgroundColor: "#f5f5f5",

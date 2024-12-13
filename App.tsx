@@ -11,6 +11,7 @@ import HospitalInfo from "./screens/HospitalInfo";
 import BoardList from "./screens/BoardList";
 import PostList from "./screens/PostList";
 import PostDetail from "./screens/PostDetail";
+import WritePost from "./screens/WritePost";
 import Profile from "./screens/Profile";
 import * as SecureStore from "expo-secure-store";
 import { Text, View, StyleSheet } from "react-native";
@@ -101,6 +102,11 @@ const CommunityStack = () => (
       name="PostDetail"
       component={PostDetail}
       options={{ title: "게시물", headerShown: false }}
+    />
+    <Stack.Screen
+      name="WritePost"
+      component={WritePost}
+      options={{ title: "게시물 작성", headerShown: false }}
     />
   </Stack.Navigator>
 );

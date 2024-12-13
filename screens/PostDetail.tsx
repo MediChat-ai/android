@@ -98,7 +98,7 @@ const PostDetail = ({ route }: { route: any }) => {
         data: { post_id, token },
       });
 
-      Alert.alert("완료", "게���물이 삭제되었습니다.", [{ text: "확인", onPress: () => console.log("Navigate to list") }]);
+      Alert.alert("완료", "게시물이 삭제되었습니다.", [{ text: "확인", onPress: () => console.log("Navigate to list") }]);
     } catch (err) {
       console.error("게시물 삭제 실패:", err);
       Alert.alert("오류", "게시물 삭제 중 문제가 발생했습니다.");

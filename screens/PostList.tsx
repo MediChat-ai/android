@@ -94,15 +94,25 @@ const PostList = ({ route, navigation }: { route: any; navigation: any }) => {
       <Text style={styles.title}>{boardName || "게시판 이름"}</Text>
       {loading ? (
         <Text style={styles.loadingText}>로딩 중...</Text>
-      ) : posts.length === 0 ? (
-        <Text style={styles.emptyText}>게시물이 없습니다.</Text>
       ) : (
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item._id}
-          renderItem={renderPost}
-          contentContainerStyle={styles.listContainer}
-        />
+        <>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate("WritePost", { board_id: id })}
+          >
+            <Text style={styles.addButtonText}>게시물 작성</Text>
+          </TouchableOpacity>
+          {posts.length === 0 ? (
+            <Text style={styles.emptyText}>게시물이 없습니다.</Text>
+          ) : (
+            <FlatList
+              data={posts}
+              keyExtractor={(item) => item._id}
+              renderItem={renderPost}
+              contentContainerStyle={styles.listContainer}
+            />
+          )}
+        </>
       )}
     </View>
   );
@@ -130,7 +140,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     padding: 15,
     borderWidth: 1,
-    borderColor: "#CCCCCC",
+    borderColor: "#DDDDDD",
   },
   cardTitle: {
     fontSize: 18,
@@ -167,6 +177,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#666666",
+    fontFamily: "NanumSquareRoundR",
+  },
+  addButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  addButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontFamily: "NanumSquareRoundR",
   },
 });

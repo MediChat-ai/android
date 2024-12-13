@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   postContainer: {
     padding: 0,
     backgroundColor: "#ffffff",
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 16,
   },
   title: {
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     padding: 12,
     backgroundColor: "#ffffff",
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 8,
     borderColor: "#ddd",
     borderWidth: 1,
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 16,
     backgroundColor: "#f8f9fa",
-    borderRadius: 8,
+    borderRadius: 10,
   },
   addCommentTitle: {
     fontSize: 16,
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: "#ddd",
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 10,
     paddingHorizontal: 8,
     marginBottom: 8,
     backgroundColor: "#ffffff",
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     backgroundColor: "#007bff",
-    borderRadius: 4,
+    borderRadius: 10,
     marginBottom: 8,
     alignItems: "center",
   },

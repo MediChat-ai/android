@@ -9,7 +9,10 @@ const backendURI = "https://api.medichat.site";
 const Profile = ({ navigation }) => {
   const [userId, setUserId] = useState("");
   const [nickname, setNickname] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const loadProfileFromToken = async () => {
     try {
@@ -47,10 +50,47 @@ const Profile = ({ navigation }) => {
       await SecureStore.setItemAsync("token", response.data.token);
 
       Alert.alert("성공", "닉네임이 성공적으로 변경되었습니다.");
-      setIsEditing(false);
+      setIsEditingNickname(false);
     } catch (err) {
       console.error("닉네임 변경 실패:", err);
       Alert.alert("오류", "닉네임 변경 중 문제가 발생했습니다.");
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!currentPassword.trim() || !newPassword.trim()) {
+      Alert.alert("오류", "모든 필드를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        Alert.alert("오류", "로그인이 필요합니다.");
+        return;
+      }
+
+      const response = await axios.post(`${backendURI}/users/change/password`, {
+        token,
+        password: currentPassword,
+        new_password: newPassword,
+      });
+
+      if (response.status === 200) {
+        Alert.alert("성공", "비밀번호가 변경되었습니다. 다시 로그인 해주세요.");
+        await SecureStore.deleteItemAsync("token");
+        navigation.navigate("Landing");
+      } else {
+        Alert.alert("오류", response.data.error || "비밀번호 변경 중 문제가 발생했습니다.");
+      }
+      setIsEditingPassword(false);
+    } catch (err) {
+      if (err.response) {
+        Alert.alert("오류", err.response.data.error || "비밀번호 변경 중 문제가 발생했습니다.");
+      } else {
+        Alert.alert("오류", "알 수 없는 오류가 발생했습니다.");
+      }
+      console.error("비밀번호 변경 실패:", err);
     }
   };
 
@@ -84,32 +124,59 @@ const Profile = ({ navigation }) => {
         <TextInput
           style={[
             styles.input,
-            { width: "100%" }, // 너비 고정
-            isEditing ? null : styles.disabledInput,
+            isEditingNickname ? null : styles.disabledInput,
           ]}
           value={nickname}
           onChangeText={setNickname}
-          editable={isEditing}
+          editable={isEditingNickname}
         />
       </View>
 
-      {isEditing && (
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleNicknameChange}
-        >
-          <Text style={styles.saveButtonText}>완료</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => setIsEditingNickname((prev) => !prev)}
+      >
+        <Text style={styles.editButtonText}>
+          {isEditingNickname ? "완료" : "닉네임 변경"}
+        </Text>
+      </TouchableOpacity>
 
-      {!isEditing && (
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => setIsEditing(true)}
-        >
-          <Text style={styles.editButtonText}>수정</Text>
-        </TouchableOpacity>
-      )}
+      <Text style={styles.label}>현재 비밀번호</Text>
+      <TextInput
+        style={[
+          styles.input,
+          isEditingPassword ? null : styles.disabledInput,
+        ]}
+        value={currentPassword}
+        onChangeText={setCurrentPassword}
+        secureTextEntry
+        editable={isEditingPassword}
+      />
+
+      <Text style={styles.label}>새 비밀번호</Text>
+      <TextInput
+        style={[
+          styles.input,
+          isEditingPassword ? null : styles.disabledInput,
+        ]}
+        value={newPassword}
+        onChangeText={setNewPassword}
+        secureTextEntry
+        editable={isEditingPassword}
+      />
+
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={() =>
+          isEditingPassword
+            ? handlePasswordChange()
+            : setIsEditingPassword(true)
+        }
+      >
+        <Text style={styles.saveButtonText}>
+          {isEditingPassword ? "완료" : "비밀번호 변경"}
+        </Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.logoutButton}
@@ -127,6 +194,12 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 30,
     backgroundColor: "#ffffff",
+  },
+  title: {
+    fontSize: 28,
+    fontFamily: "NanumSquareRoundB",
+    marginBottom: 30,
+    textAlign: "center",
   },
   label: {
     fontSize: 18,
@@ -185,12 +258,6 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: "#ffffff",
     fontFamily: "NanumSquareRoundR",
-  },
-  title: {
-    fontSize: 28,
-    fontFamily: "NanumSquareRoundB",
-    marginBottom: 30,
-    textAlign: 'center',
   },
 });
 

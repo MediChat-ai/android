@@ -203,9 +203,10 @@ const styles = StyleSheet.create({
     borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingLeft: 10,
     marginRight: 10,
     fontSize: 16,
+    fontFamily: 'NanumSquareRoundR',
   },
   sendButton: {
     backgroundColor: '#0070FF',
@@ -216,6 +217,7 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: '#FFFFFF',
+    fontFamily: 'NanumSquareRoundR',
     fontSize: 16,
   },
 });

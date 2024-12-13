@@ -5,12 +5,27 @@ import * as Font from 'expo-font';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
+const evaluatePasswordStrength = (password) => {
+  let strength = 0;
+  if (password.length >= 8) strength++; // 길이 체크
+  if (/[A-Z]/.test(password)) strength++; // 대문자 포함
+  if (/[0-9]/.test(password)) strength++; // 숫자 포함
+  if (/[^a-zA-Z0-9]/.test(password)) strength++; // 특수문자 포함
+  return strength;
+};
+
 const Register = ({ navigation }: { navigation: any }) => {
   const [fontLoading, setFontLoading] = useState(false);
   const [id, setId] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState(0);
+
+  const handlePasswordChange = (newPassword) => {
+    setPassword(newPassword);
+    setPasswordStrength(evaluatePasswordStrength(newPassword));
+  };
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -42,6 +57,10 @@ const Register = ({ navigation }: { navigation: any }) => {
   const handleRegister = async () => {
     if (password !== rePassword) {
       Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    if (passwordStrength < 3) {
+      Alert.alert('오류', '비밀번호 강도가 낮습니다.');
       return;
     }
     try {
@@ -102,8 +121,20 @@ const Register = ({ navigation }: { navigation: any }) => {
             placeholder="비밀번호"
             secureTextEntry
             value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
           />
+
+          <View style={[styles.strengthBar, {
+            width: `${(passwordStrength / 4) * 100}%`,
+            backgroundColor:
+              passwordStrength === 1
+                ? 'red'
+                : passwordStrength === 2
+                  ? 'orange'
+                  : passwordStrength === 3
+                    ? 'green'
+                    : 'blue',
+          }]} />
 
           <TextInput
             style={styles.input}
@@ -129,6 +160,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    padding: 15,
   },
   title: {
     fontSize: 32,
@@ -142,7 +174,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
-    width: '80%',
+    width: '100%',
     marginBottom: 20,
     fontFamily: 'NanumSquareRoundR',
   },
@@ -163,7 +195,15 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     paddingHorizontal: 10,
-  }
+  },
+  strengthBar: {
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'gray',
+    width: '0%',
+    marginBottom: 20,
+    alignSelf: 'flex-start',
+  },
 });
 
 export default Register;

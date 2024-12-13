@@ -6,6 +6,15 @@ import axios from "axios";
 
 const backendURI = "https://api.medichat.site";
 
+const evaluatePasswordStrength = (password) => {
+  let strength = 0;
+  if (password.length >= 8) strength++; // 길이 체크
+  if (/[A-Z]/.test(password)) strength++; // 대문자 포함
+  if (/[0-9]/.test(password)) strength++; // 숫자 포함
+  if (/[^a-zA-Z0-9]/.test(password)) strength++; // 특수문자 포함
+  return strength;
+};
+
 const Profile = ({ navigation }) => {
   const [userId, setUserId] = useState("");
   const [nickname, setNickname] = useState("");
@@ -13,6 +22,7 @@ const Profile = ({ navigation }) => {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const loadProfileFromToken = async () => {
     try {
@@ -60,6 +70,10 @@ const Profile = ({ navigation }) => {
   const handlePasswordChange = async () => {
     if (!currentPassword.trim() || !newPassword.trim()) {
       Alert.alert("오류", "모든 필드를 입력해주세요.");
+      return;
+    }
+    if (passwordStrength < 3) {
+      Alert.alert("오류", "비밀번호 강도가 낮습니다.");
       return;
     }
 
@@ -160,10 +174,20 @@ const Profile = ({ navigation }) => {
           isEditingPassword ? null : styles.disabledInput,
         ]}
         value={newPassword}
-        onChangeText={setNewPassword}
+        onChangeText={(password) => {
+          setNewPassword(password);
+          setPasswordStrength(evaluatePasswordStrength(password));
+        }}
         secureTextEntry
         editable={isEditingPassword}
       />
+      <View style={[styles.strengthBar, {
+        width: `${(passwordStrength / 4) * 100}%`,
+        backgroundColor:
+          passwordStrength === 1 ? "red" :
+            passwordStrength === 2 ? "orange" :
+              passwordStrength === 3 ? "green" : "blue",
+      }]} />
 
       <TouchableOpacity
         style={isEditingPassword ? styles.saveButton : styles.editButton}
@@ -258,6 +282,13 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: "#ffffff",
     fontFamily: "NanumSquareRoundR",
+  },
+  strengthBar: {
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "gray",
+    width: "0%",
+    marginBottom: 20,
   },
 });
 

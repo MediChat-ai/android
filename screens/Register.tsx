@@ -59,8 +59,8 @@ const Register = ({ navigation }: { navigation: any }) => {
       Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
       return;
     }
-    if (passwordStrength < 3) {
-      Alert.alert('오류', '비밀번호 강도가 낮습니다.');
+    if (passwordStrength < 4) {
+      Alert.alert('오류', '비밀번호 강도가 낮습니다. 8자 이상, 영어 대소문자, 특수문자가 모두 포함되어야 합니다.');
       return;
     }
     try {
@@ -128,12 +128,12 @@ const Register = ({ navigation }: { navigation: any }) => {
             width: `${(passwordStrength / 4) * 100}%`,
             backgroundColor:
               passwordStrength === 1
-                ? 'red'
+                ? '#f73a34'
                 : passwordStrength === 2
-                  ? 'orange'
+                  ? '#ed8337'
                   : passwordStrength === 3
-                    ? 'green'
-                    : 'blue',
+                    ? '#ffe600'
+                    : '#37ed3a',
           }]} />
 
           <TextInput

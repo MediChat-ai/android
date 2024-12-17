@@ -52,13 +52,11 @@ const Profile = ({ navigation }) => {
         Alert.alert("오류", "로그인이 필요합니다.");
         return;
       }
-
       const response = await axios.post(`${backendURI}/users/change/username`, {
         new_username: nickname,
         token,
       });
       await SecureStore.setItemAsync("token", response.data.token);
-
       Alert.alert("성공", "닉네임이 성공적으로 변경되었습니다.");
       setIsEditingNickname(false);
     } catch (err) {
@@ -72,8 +70,8 @@ const Profile = ({ navigation }) => {
       Alert.alert("오류", "모든 필드를 입력해주세요.");
       return;
     }
-    if (passwordStrength < 3) {
-      Alert.alert("오류", "비밀번호 강도가 낮습니다.");
+    if (passwordStrength < 4) {
+      Alert.alert("오류", "비밀번호 강도가 낮습니다. 8자 이상, 영어 대소문자, 특수문자가 모두 포함되어야 합니다.");
       return;
     }
 
@@ -148,7 +146,13 @@ const Profile = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => setIsEditingNickname((prev) => !prev)}
+        onPress={() => {
+          if (isEditingNickname) {
+            handleNicknameChange();
+          } else {
+            setIsEditingNickname(true);
+          }
+        }}
       >
         <Text style={styles.editButtonText}>
           {isEditingNickname ? "완료" : "닉네임 변경"}
@@ -184,9 +188,9 @@ const Profile = ({ navigation }) => {
       <View style={[styles.strengthBar, {
         width: `${(passwordStrength / 4) * 100}%`,
         backgroundColor:
-          passwordStrength === 1 ? "red" :
-            passwordStrength === 2 ? "orange" :
-              passwordStrength === 3 ? "green" : "blue",
+          passwordStrength === 1 ? "#f73a34" :
+            passwordStrength === 2 ? "#ed8337" :
+              passwordStrength === 3 ? "#ffe600" : "#37ed3a",
       }]} />
 
       <TouchableOpacity

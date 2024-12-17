@@ -71,7 +71,7 @@ const Profile = ({ navigation }) => {
       return;
     }
     if (passwordStrength < 4) {
-      Alert.alert("오류", "비밀번호 강도가 낮습니다. 8자 이상, 영어 대소문자, 특수문자가 모두 포함되어야 합니다.");
+      Alert.alert("오류", "비밀번호 보안성이 낮습니다. 영어 대소문자, 숫자, 특수문자가 포함된 8자 이상의 비밀번호를 입력해주세요.");
       return;
     }
 

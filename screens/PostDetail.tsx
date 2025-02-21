@@ -54,8 +54,8 @@ const PostDetail = ({ route, navigation }: { route: any; navigation: any }) => {
       setComments(commentsResponse.data.comments);
 
       const decodedToken: any = JSON.parse(atob(token.split(".")[1]));
-      setIsAuthor(decodedToken.user_name === fetchedPost.author_name);
-      setCurrentUser(decodedToken.user_name);
+      setIsAuthor(decodedToken.user_id === fetchedPost.author_id);
+      setCurrentUser(decodedToken.user_id);
     } catch (err) {
       console.error("불러오기 실패:", err);
       Alert.alert("오류", "데이터를 불러오는 중 문제가 발생했습니다.");
@@ -73,11 +73,11 @@ const PostDetail = ({ route, navigation }: { route: any; navigation: any }) => {
 
       await axios.put(
         `${backendURI}/community/editPost`,
-        { 
-          post_id, 
+        {
+          post_id,
           title: editedPostTitle,
-          content: editedPostContent, 
-          token 
+          content: editedPostContent,
+          token
         },
       );
 
@@ -322,7 +322,7 @@ const PostDetail = ({ route, navigation }: { route: any; navigation: any }) => {
                       timeZone: "Asia/Seoul",
                     })}
                   </Text>
-                  {comment.author_name === currentUser && (
+                  {comment.author_id === currentUser && (
                     <View style={styles.iconContainer}>
                       <Icon
                         name="create-outline"

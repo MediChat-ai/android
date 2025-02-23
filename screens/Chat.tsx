@@ -3,9 +3,7 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Keyboard
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import * as Font from 'expo-font';
-import { RUNPOD_API_KEY, RUNPOD_ENDPOINT_ID, MODEL_NAME, GROQ_API_KEY } from '@env';
-
-const BASE_URL = `https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/openai/v1`;
+import { GROQ_API_KEY } from '@env';
 
 const ChatScreen = () => {
   const [fontLoading, setFontLoading] = useState(false)
@@ -27,12 +25,15 @@ const ChatScreen = () => {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('빠르지만 정확성이 떨어질 수 있음');
-  const [modelName, setModelName] = useState(1);
+  const [selectedModel, setSelectedModel] = useState('gemma2-9b-it');
+  const [modelName, setModelName] = useState('gemma2-9b-it');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dropdownItems] = useState([
-    { label: '정확하지만 느림', value: '정확하지만 느림' },
-    { label: '빠르지만 정확성이 떨어질 수 있음', value: '빠르지만 정확성이 떨어질 수 있음' },
+    { label: 'gemma2-9b-it', value: 'gemma2-9b-it' },
+    { label: 'deepseek-r1-distill-llama-70b', value: 'deepseek-r1-distill-llama-70b' },
+    { label: 'llama3-8b-8192', value: 'llama3-8b-8192' },
+    { label: 'llama-3.3-70b-specdec', value: 'llama-3.3-70b-specdec' },
+    { label: 'mixtral-8x7b-32768', value: 'mixtral-8x7b-32768' },
   ]);
   const chatBoxRef = useRef<FlatList>(null);
 
@@ -44,44 +45,25 @@ const ChatScreen = () => {
     setInput('');
 
     try {
+      console.log(modelName);
       let aiResponse = '';
-
-      if (modelName === 0) {
-        const response = await axios.post(
-          `${BASE_URL}/chat/completions`,
-          {
-            model: MODEL_NAME,
-            messages: [{ role: 'user', content: input }],
-            temperature: 0,
-            max_tokens: 512,
+      const response = await axios.post(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          model: modelName,
+          messages: [
+            { role: 'system', content: '당신은 친절한 의료 상담 AI입니다. 한국어로 답변해주세요.' },
+            { role: 'user', content: input },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              Authorization: `Bearer ${RUNPOD_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        aiResponse = response.data.choices[0].message.content;
-      } else if (modelName === 1) {
-        const response = await axios.post(
-          'https://api.groq.com/openai/v1/chat/completions',
-          {
-            model: 'gemma2-9b-it',
-            messages: [
-              { role: 'system', content: '당신은 친절한 의료 상담 AI입니다. 한국어로 답변해주세요.' },
-              { role: 'user', content: input },
-            ],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${GROQ_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        aiResponse = response.data.choices[0].message.content;
-      }
+        }
+      );
+      aiResponse = response.data.choices[0].message.content;
 
       setMessages((prev) => [...prev, { sender: 'ai', text: aiResponse }]);
     } catch (error: unknown) {
@@ -107,7 +89,8 @@ const ChatScreen = () => {
           items={dropdownItems}
           setOpen={setDropdownOpen}
           setValue={setSelectedModel}
-          onChangeValue={(value) => setModelName(value === '정확하지만 느림' ? 0 : 1)}
+          // onChangeValue={(value) => setModelName(value === '정확하지만 느림' ? 0 : 1)}
+          onChangeValue={(value) => setModelName(value)}
           textStyle={{ fontFamily: 'NanumSquareRoundR', fontSize: 16, }}
         />
       </View>
